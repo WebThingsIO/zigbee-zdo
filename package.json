@@ -1,0 +1,29 @@
+{
+  "name": "zigbee-zdo",
+  "version": "1.0.0",
+  "description": "Module for building/parsing Zigbee ZDO frames.",
+  "main": "zdo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozilla-iot/zigbee-zdo.git"
+  },
+  "keywords": [
+    "zigbee",
+    "zdo"
+  ],
+  "author": "Mozilla IoT",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/mozilla-iot/zigbee-zdo/issues"
+  },
+  "homepage": "https://github.com/mozilla-iot/zigbee-zdo#readme",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "buffer-builder": "^0.2.0",
+    "buffer-parser": "^0.2.0",
+    "zcl-id": "^0.4.0"
+  }
+}
