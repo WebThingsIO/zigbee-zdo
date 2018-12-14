@@ -4,7 +4,7 @@
   "description": "Module for building/parsing Zigbee ZDO frames.",
   "main": "zdo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,9 @@
     "buffer-builder": "^0.2.0",
     "buffer-parser": "^0.2.0",
     "zcl-id": "^0.4.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.10.0"
   }
 }

@@ -508,13 +508,17 @@ zdoParser[zci.NETWORK_ADDRESS_RESPONSE] = function(frame, reader) {
     for (let i = 0; i < frame.numAssocDev; i++) {
       frame.assocAddr16[i] = swapHex(reader.nextString(2, 'hex'));
     }
+  } else {
+    frame.numAssocDev = 0;
+    frame.startIndex = 0;
+    frame.assocAddr16 = [];
   }
 };
 
 zdoDump[zci.IEEE_ADDRESS_RESPONSE] =
 zdoDump[zci.NETWORK_ADDRESS_RESPONSE] = function(frame) {
   return `Addr:${frame.nwkAddr64} ${frame.nwkAddr16} ` +
-         `si:${frame.startIndex} [${frame.assocAddr16.toString}]`;
+         `si:${frame.startIndex} [${frame.assocAddr16.toString()}]`;
 };
 
 zdoParser[zci.MANAGEMENT_BIND_RESPONSE] = function(frame, reader) {

@@ -1,7 +1,4 @@
 module.exports = {
-  'plugins': [
-    'html'
-  ],
   'env': {
     'browser': true,
     'commonjs': true,
@@ -98,10 +95,7 @@ module.exports = {
     ],
     'max-len': [
       'error',
-      {
-        'code': 80,
-        'ignoreTemplateLiterals': true
-      }
+      80
     ],
     'multiline-ternary': [
       'error',
