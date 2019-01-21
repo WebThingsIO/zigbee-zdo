@@ -1,6 +1,6 @@
 {
   "name": "zigbee-zdo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Module for building/parsing Zigbee ZDO frames.",
   "main": "zdo.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "buffer-builder": "^0.2.0",
     "buffer-parser": "^0.2.0",
     "buffer-reader": "^0.1.0",
-    "zcl-id": "^0.4.0"
+    "zcl-id": "dhylands/zcl-id#moziot-changes"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
