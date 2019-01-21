@@ -4,7 +4,8 @@
   "description": "Module for building/parsing Zigbee ZDO frames.",
   "main": "zdo.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,12 @@
     "assert": "^1.4.1",
     "buffer-builder": "^0.2.0",
     "buffer-parser": "^0.2.0",
+    "buffer-reader": "^0.1.0",
     "zcl-id": "^0.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.10.0"
+    "eslint": "^5.10.0",
+    "jest": "^23.6.0"
   }
 }
