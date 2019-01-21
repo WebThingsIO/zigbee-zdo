@@ -303,15 +303,15 @@ zdoParser[zci.BIND_REQUEST] = function(frame, reader) {
 
 zdoDump[zci.BIND_REQUEST] = function(frame) {
   let s = `Src:${frame.bindSrcAddr64}:${frame.bindSrcEndpoint}`;
-  s += `C:${frame.bindClusterId}`;
-  const cluster = zclId.cluster(parseInt(frame.bindClusterId, 16));
+  s += ` C:${getClusterIdAsString(frame.bindClusterId)}`;
+  const cluster = zclId.cluster(getClusterIdAsInt(frame.bindClusterId));
   if (cluster) {
     s += `-${cluster.key}`;
   }
   if (frame.bindDstAddrMode == 1) {
-    s += `Dst:${frame.bindDstAddr16}`;
+    s += ` Dst:${frame.bindDstAddr16}`;
   } else if (frame.bindDstAddrMode == 3) {
-    s += `Dst:${frame.bindDstAddr64}:${frame.bindDstEndpoint}`;
+    s += ` Dst:${frame.bindDstAddr64}:${frame.bindDstEndpoint}`;
   }
   return s;
 };
@@ -517,8 +517,15 @@ zdoParser[zci.NETWORK_ADDRESS_RESPONSE] = function(frame, reader) {
 
 zdoDump[zci.IEEE_ADDRESS_RESPONSE] =
 zdoDump[zci.NETWORK_ADDRESS_RESPONSE] = function(frame) {
+  let assocStr = '';
+  for (const assocAddr16 of frame.assocAddr16) {
+    if (assocStr.length > 0) {
+      assocStr += ' ';
+    }
+    assocStr += assocAddr16;
+  }
   return `Addr:${frame.nwkAddr64} ${frame.nwkAddr16} ` +
-         `si:${frame.startIndex} [${frame.assocAddr16.toString()}]`;
+         `si:${frame.startIndex} [${assocStr}]`;
 };
 
 zdoParser[zci.MANAGEMENT_BIND_RESPONSE] = function(frame, reader) {
@@ -549,11 +556,15 @@ zdoDump[zci.MANAGEMENT_BIND_RESPONSE] = function(frame) {
   for (let i = 0; i < frame.numEntriesThisResponse; i++) {
     const binding = frame.bindings[i];
     let s = `Src:${binding.srcAddr64}:${binding.srcEndpoint}`;
-    s += `C:${binding.clutserId}`;
+    s += ` C:${getClusterIdAsString(binding.clutserId)}`;
+    const cluster = zclId.cluster(getClusterIdAsInt(binding.clutserId));
+    if (cluster) {
+      s += `-${cluster.key}`;
+    }
     if (binding.dstAddrMode == 1) {
-      s += `Dst:${binding.dstAddr16}`;
+      s += ` Dst:${binding.dstAddr16}`;
     } else if (binding.dstAddrMode == 3) {
-      s += `Dst:${binding.dstAddr64}:${binding.dstEndpoint}`;
+      s += ` Dst:${binding.dstAddr64}:${binding.dstEndpoint}`;
     }
     result.push(s);
   }
@@ -630,7 +641,7 @@ zdoParser[zci.MANAGEMENT_NETWORK_UPDATE_NOTIFY] = function(frame, reader) {
 
 zdoDump[zci.MANAGEMENT_NETWORK_UPDATE_NOTIFY] = function(frame) {
   return [
-    `Status:${frame.status} sc:${frame.scannedChannels}` +
+    `Status:${frame.status} sc:${frame.scannedChannels} ` +
     `TotalXmit:${frame.totalTransmissions} ` +
     `TotalFail:${frame.transmissionFailures}`,
     `Energy:[${frame.energyValues.toString()}]`,
