@@ -33,15 +33,15 @@ function swapHex(string) {
   return string.match(/.{2}/g).reverse().join('');
 }
 
+zci.NETWORK_ADDRESS_REQUEST = 0x0000;
+zci[zci.NETWORK_ADDRESS_REQUEST] = 'Network Address Req (0x0000)';
+zci.NETWORK_ADDRESS_RESPONSE = 0x8000;
+zci[zci.NETWORK_ADDRESS_RESPONSE] = 'Network Address Resp (0x8000)';
+
 zci.IEEE_ADDRESS_REQUEST = 0x0001;
 zci[zci.IEEE_ADDRESS_REQUEST] = 'IEEE Address Req (0x0001)';
 zci.IEEE_ADDRESS_RESPONSE = 0x8001;
 zci[zci.IEEE_ADDRESS_RESPONSE] = 'IEEE Address Resp (0x8001)';
-
-zci.NETWORK_ADDRESS_REQUEST = 0x0000;
-zci[zci.NETWORK_ADDRESS_REQUEST] = 'Network Address Req (0x0002)';
-zci.NETWORK_ADDRESS_RESPONSE = 0x8000;
-zci[zci.NETWORK_ADDRESS_RESPONSE] = 'Network Address Resp (0x8002)';
 
 zci.NODE_DESCRIPTOR_REQUEST = 0x0002;
 zci[zci.NODE_DESCRIPTOR_REQUEST] = 'Node Descriptor Req (0x0002)';
@@ -221,13 +221,6 @@ class ZdoApi {
     frame.destinationEndpoint = 0;
     frame.profileId = 0;
 
-    if (!('broadcastRadius' in frame)) {
-      frame.broadcastRadius = 0;
-    }
-    if (!('options' in frame)) {
-      frame.options = 0;
-    }
-
     const zdoData = Buffer.alloc(256);
     const builder = new BufferBuilder(zdoData);
     builder.appendUInt8(this.getZdoSeq(frame));
@@ -278,7 +271,7 @@ zdoBuilder[zci.BIND_REQUEST] = function(frame, builder) {
     builder.appendString(swapHex(frame.bindDstAddr16), 'hex');
   } else if (frame.bindDstAddrMode === 3) {
     assert(typeof frame.bindDstAddr64 !== 'undefined',
-           'Must provide bindDstAddr16 for bindDstAddrMode 3');
+           'Must provide bindDstAddr64 for bindDstAddrMode 3');
     assert(typeof frame.bindDstEndpoint !== 'undefined',
            'Must provide bindDstEndpoint for bindDstAddrMode 3');
     builder.appendString(swapHex(frame.bindDstAddr64), 'hex');
@@ -324,7 +317,7 @@ zdoBuilder[zci.IEEE_ADDRESS_REQUEST] = function(frame, builder) {
 };
 
 zdoParser[zci.IEEE_ADDRESS_REQUEST] = function(frame, reader) {
-  frame.addr64 = swapHex(reader.nextString(2, 'hex'));
+  frame.addr16 = swapHex(reader.nextString(2, 'hex'));
   frame.requestType = reader.nextUInt8();
   frame.startIndex = reader.nextUInt8();
 };
@@ -457,6 +450,9 @@ zdoParser[zci.ACTIVE_ENDPOINTS_RESPONSE] = function(frame, reader) {
     for (let i = 0; i < frame.numActiveEndpoints; i++) {
       frame.activeEndpoints[i] = reader.nextUInt8();
     }
+  } else {
+    frame.numActiveEndpoints = 0;
+    frame.activeEndpoints = [];
   }
 };
 
@@ -556,8 +552,8 @@ zdoDump[zci.MANAGEMENT_BIND_RESPONSE] = function(frame) {
   for (let i = 0; i < frame.numEntriesThisResponse; i++) {
     const binding = frame.bindings[i];
     let s = `Src:${binding.srcAddr64}:${binding.srcEndpoint}`;
-    s += ` C:${getClusterIdAsString(binding.clutserId)}`;
-    const cluster = zclId.cluster(getClusterIdAsInt(binding.clutserId));
+    s += ` C:${getClusterIdAsString(binding.clusterId)}`;
+    const cluster = zclId.cluster(getClusterIdAsInt(binding.clusterId));
     if (cluster) {
       s += `-${cluster.key}`;
     }
@@ -629,7 +625,7 @@ zdoDump[zci.MANAGEMENT_LQI_RESPONSE] = function(frame) {
 
 zdoParser[zci.MANAGEMENT_NETWORK_UPDATE_NOTIFY] = function(frame, reader) {
   frame.status = reader.nextUInt8();
-  frame.scannedChannels = reader.nextString(4, 'hex').swapHex();
+  frame.scannedChannels = swapHex(reader.nextString(4, 'hex'));
   frame.totalTransmissions = reader.nextUInt16LE();
   frame.transmissionFailures = reader.nextUInt16LE();
   frame.numEnergyValues = reader.nextUInt8();
@@ -749,6 +745,8 @@ zdoDump[zci.NODE_DESCRIPTOR_RESPONSE] = function(frame) {
 zdoParser[zci.SIMPLE_DESCRIPTOR_RESPONSE] = function(frame, reader) {
   frame.status = reader.nextUInt8();
   frame.zdoAddr16 = swapHex(reader.nextString(2, 'hex'));
+  frame.inputClusters = [];
+  frame.outputClusters = [];
   if (reader.offset >= reader.buf.length) {
     return;
   }
@@ -766,13 +764,11 @@ zdoParser[zci.SIMPLE_DESCRIPTOR_RESPONSE] = function(frame, reader) {
   frame.appDeviceVersion = byte1 & 0x0f;
 
   frame.inputClusterCount = reader.nextUInt8();
-  frame.inputClusters = [];
   for (let i = 0; i < frame.inputClusterCount; i++) {
     frame.inputClusters[i] = swapHex(reader.nextString(2, 'hex'));
   }
 
   frame.outputClusterCount = reader.nextUInt8();
-  frame.outputClusters = [];
   for (let i = 0; i < frame.outputClusterCount; i++) {
     frame.outputClusters[i] = swapHex(reader.nextString(2, 'hex'));
   }
