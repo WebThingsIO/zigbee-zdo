@@ -1,11 +1,12 @@
 {
   "name": "zigbee-zdo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Module for building/parsing Zigbee ZDO frames.",
   "main": "zdo.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "jest": "jest --coverage",
+    "test": "eslint . && jest --coverage"
   },
   "repository": {
     "type": "git",
