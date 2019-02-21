@@ -200,9 +200,13 @@ class ZdoApi {
   makeFrame(frame) {
     assert(frame, 'Frame parameter must be a frame object');
     assert(frame.destination64, 'Caller must provide frame.destination64');
-    assert(frame.destination16, 'Caller must provide frame.destination16');
     assert(typeof frame.clusterId !== 'undefined',
            'Caller must provide frame.clusterId');
+
+    if (!frame.destination16) {
+      // 16-bit address is unknown.
+      frame.destination16 = 'fffe';
+    }
 
     const clusterId = getClusterIdAsInt(frame.clusterId);
     // Convert the clusterId to its hex form. This is easier to
@@ -486,7 +490,7 @@ zdoParser[zci.END_DEVICE_ANNOUNCEMENT] = function(frame, reader) {
 };
 
 zdoDump[zci.END_DEVICE_ANNOUNCEMENT] = function(frame) {
-  return `Addr:${frame.addr64} ${frame.addr16} ` +
+  return `Addr:${frame.zdoAddr64} ${frame.zdoAddr16} ` +
          `FFD:${frame.fullFunctionDevice} ` +
          `AC:${frame.acPower} ` +
          `rxOnWhenIdle:${frame.rxOnWhenIdle}`;

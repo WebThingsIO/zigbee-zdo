@@ -77,6 +77,22 @@ describe(zci[zci.NETWORK_ADDRESS_REQUEST], () => {
     expect(frame.data).toEqual(expectedData);
     dumpFrame('Req', frame);
   });
+  it('Build Frame with no destination16', () => {
+    const frame = Object.assign({
+      clusterId: zci.NETWORK_ADDRESS_REQUEST,
+      addr64: '1122334455667788',
+      requestType: 0,
+      startIndex: 0,
+    }, defaultFrame);
+    delete frame.destination16;
+    zdoObj.makeFrame(frame);
+    expect(frame.destination16).toEqual('fffe');
+    const expectedData = Buffer.from([
+      0xee, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00, 0x00,
+    ]);
+    expect(frame.data).toEqual(expectedData);
+    dumpFrame('Req', frame);
+  });
   it('Parse frame', () => {
     const frame = Object.assign({
       clusterId: zci.NETWORK_ADDRESS_REQUEST,
@@ -1460,14 +1476,6 @@ describe('makeFrame coverage', () => {
   });
   it('missing destination64', () => {
     const frame = {};
-    expect(() => {
-      zdoObj.makeFrame(frame);
-    }).toThrow();
-  });
-  it('missing destination16', () => {
-    const frame = {
-      destination64: '01234567891bcdef',
-    };
     expect(() => {
       zdoObj.makeFrame(frame);
     }).toThrow();

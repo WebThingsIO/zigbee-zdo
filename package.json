@@ -1,6 +1,6 @@
 {
   "name": "zigbee-zdo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Module for building/parsing Zigbee ZDO frames.",
   "main": "zdo.js",
   "scripts": {
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.10.0",
+    "eslint": "^5.12.1",
     "jest": "^23.6.0"
   }
 }
