@@ -612,7 +612,9 @@ const RELATIONSHIP = [
 const PERMIT_JOINS = ['Y', 'N', '?', '?'];
 
 zdoDump[zci.MANAGEMENT_LQI_RESPONSE] = function(frame) {
-  const result = [`Status:${frame.status} si:${frame.startIndex}`];
+  const result = [`Status:${frame.status} si:${frame.startIndex} ` +
+                  `this frame: ${frame.numEntriesThisResponse} ` +
+                  `total entries: ${frame.numEntries}`];
   for (let i = 0; i < frame.numEntriesThisResponse; i++) {
     const neighbor = frame.neighbors[i];
     let s = `PAN:${neighbor.panId} Addr:${neighbor.addr64} ${neighbor.addr16} `;
