@@ -199,7 +199,6 @@ class ZdoApi {
 
   makeFrame(frame) {
     assert(frame, 'Frame parameter must be a frame object');
-    assert(frame.destination64, 'Caller must provide frame.destination64');
     assert(typeof frame.clusterId !== 'undefined',
            'Caller must provide frame.clusterId');
 
